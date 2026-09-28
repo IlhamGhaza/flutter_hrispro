@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/datasource/auth_local_datasource.dart';
 import '../../../data/model/response/auth_response_model.dart';
 import '../bloc/login/login_bloc.dart';
+import 'package:local_auth/local_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,12 +20,69 @@ class _LoginPageState extends State<LoginPage> {
   bool _remember = true;
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
+  final LocalAuthentication _localAuth = LocalAuthentication();
+
+  Future<void> _authenticateWithBiometrics() async {
+    bool authenticated = false;
+    try {
+      authenticated = await _localAuth.authenticate(
+        localizedReason: 'Scan your fingerprint to login',
+        persistAcrossBackgrounding: true,
+        biometricOnly: true,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+      return;
+    }
+
+    if (authenticated && mounted) {
+      final email = await AuthLocalDatasource().getRememberedEmail();
+      final password = await AuthLocalDatasource().getSecurePassword();
+      if (email != null &&
+          email.isNotEmpty &&
+          password != null &&
+          password.isNotEmpty) {
+        if (mounted) {
+          context.read<LoginBloc>().add(LoginEvent.login(email, password));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Please login with your email and password first, and check "Remember Me".',
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   void initState() {
-    emailController = TextEditingController(text: 'admin@bahri.com');
-    passwordController = TextEditingController(text: '12345678');
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
     super.initState();
+    _loadRememberedEmail();
+  }
+
+  Future<void> _loadRememberedEmail() async {
+    final email = await AuthLocalDatasource().getRememberedEmail();
+    if (mounted) {
+      if (email != null && email.isNotEmpty) {
+        setState(() {
+          _remember = true;
+          emailController.text = email;
+        });
+      } else {
+        setState(() {
+          _remember = false;
+        });
+      }
+    }
   }
 
   @override
@@ -204,7 +262,17 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GestureDetector(
-                          onTap: () => setState(() => _remember = !_remember),
+                          onTap: () async {
+                            setState(() => _remember = !_remember);
+                            if (!_remember) {
+                              await AuthLocalDatasource()
+                                  .clearRememberedEmail();
+                              setState(() {
+                                emailController.clear();
+                                passwordController.clear();
+                              });
+                            }
+                          },
                           child: Row(
                             children: [
                               Container(
@@ -262,6 +330,23 @@ class _LoginPageState extends State<LoginPage> {
                             orElse: () {},
                             success: (AuthResponseModel data) {
                               AuthLocalDatasource().saveAuthData(data);
+                              if (_remember) {
+                                AuthLocalDatasource().saveRememberedEmail(
+                                  emailController.text,
+                                );
+                                AuthLocalDatasource().saveSecurePassword(
+                                  passwordController.text,
+                                );
+                              } else {
+                                AuthLocalDatasource().clearRememberedEmail();
+                                AuthLocalDatasource().clearSecurePassword();
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Login success!'),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
                               context.go('/home');
                             },
                             error: (message) {
@@ -289,7 +374,9 @@ class _LoginPageState extends State<LoginPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -310,7 +397,9 @@ class _LoginPageState extends State<LoginPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -321,7 +410,9 @@ class _LoginPageState extends State<LoginPage> {
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
                                   ),
                                 ),
                               );
@@ -356,61 +447,67 @@ class _LoginPageState extends State<LoginPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: AppColors.background,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.border),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  LucideIcons.fingerprint,
-                                  size: 18,
-                                  color: AppColors.primary,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Fingerprint',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
+                          child: GestureDetector(
+                            onTap: _authenticateWithBiometrics,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: AppColors.background,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.border),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LucideIcons.fingerprint,
+                                    size: 18,
+                                    color: AppColors.primary,
                                   ),
-                                ),
-                              ],
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Fingerprint',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: AppColors.background,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.border),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  LucideIcons.camera,
-                                  size: 18,
-                                  color: AppColors.primary,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Face ID',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
+                          child: GestureDetector(
+                            onTap: _authenticateWithBiometrics,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: AppColors.background,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.border),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LucideIcons.camera,
+                                    size: 18,
+                                    color: AppColors.primary,
                                   ),
-                                ),
-                              ],
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Face ID',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

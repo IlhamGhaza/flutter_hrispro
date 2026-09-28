@@ -20,7 +20,7 @@ const List<String> _monthNames = [
   'September',
   'Oktober',
   'November',
-  'Desember'
+  'Desember',
 ];
 
 extension DateTimeExt on DateTime {

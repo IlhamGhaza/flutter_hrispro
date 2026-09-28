@@ -4,10 +4,7 @@ class OvertimeResponseModel {
   final String? message;
   final List<Overtime>? data;
 
-  OvertimeResponseModel({
-    this.message,
-    this.data,
-  });
+  OvertimeResponseModel({this.message, this.data});
 
   factory OvertimeResponseModel.fromJson(String str) =>
       OvertimeResponseModel.fromMap(json.decode(str));
@@ -25,10 +22,9 @@ class OvertimeResponseModel {
       );
 
   Map<String, dynamic> toMap() => {
-        'message': message,
-        'data':
-            data == null ? [] : List<dynamic>.from(data!.map((x) => x.toMap())),
-      };
+    'message': message,
+    'data': data == null ? [] : List<dynamic>.from(data!.map((x) => x.toMap())),
+  };
 }
 
 class Overtime {
@@ -67,42 +63,42 @@ class Overtime {
   String toJson() => json.encode(toMap());
 
   factory Overtime.fromMap(Map<String, dynamic> json) => Overtime(
-        id: json['id'],
-        userId: json['user_id'],
-        date: json['date'],
-        startTime: json['start_time'],
-        endTime: json['end_time'],
-        reason: json['reason'],
-        document: json['document'],
-        status: json['status'],
-        notes: json['notes'],
-        approvedAt: json['approved_at'] == null
-            ? null
-            : DateTime.parse(json['approved_at']),
-        approvedBy: json['approved_by'],
-        createdAt: json['created_at'] == null
-            ? null
-            : DateTime.parse(json['created_at']),
-        updatedAt: json['updated_at'] == null
-            ? null
-            : DateTime.parse(json['updated_at']),
-      );
+    id: json['id'],
+    userId: json['user_id'],
+    date: json['date'],
+    startTime: json['start_time'],
+    endTime: json['end_time'],
+    reason: json['reason'],
+    document: json['document'],
+    status: json['status'],
+    notes: json['notes'],
+    approvedAt: json['approved_at'] == null
+        ? null
+        : DateTime.parse(json['approved_at']),
+    approvedBy: json['approved_by'],
+    createdAt: json['created_at'] == null
+        ? null
+        : DateTime.parse(json['created_at']),
+    updatedAt: json['updated_at'] == null
+        ? null
+        : DateTime.parse(json['updated_at']),
+  );
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'user_id': userId,
-        'date': date,
-        'start_time': startTime,
-        'end_time': endTime,
-        'reason': reason,
-        'document': document,
-        'status': status,
-        'notes': notes,
-        'approved_at': approvedAt?.toIso8601String(),
-        'approved_by': approvedBy,
-        'created_at': createdAt?.toIso8601String(),
-        'updated_at': updatedAt?.toIso8601String(),
-      };
+    'id': id,
+    'user_id': userId,
+    'date': date,
+    'start_time': startTime,
+    'end_time': endTime,
+    'reason': reason,
+    'document': document,
+    'status': status,
+    'notes': notes,
+    'approved_at': approvedAt?.toIso8601String(),
+    'approved_by': approvedBy,
+    'created_at': createdAt?.toIso8601String(),
+    'updated_at': updatedAt?.toIso8601String(),
+  };
 }
 
 class OvertimeStatusResponseModel {
@@ -110,11 +106,7 @@ class OvertimeStatusResponseModel {
   final String? message;
   final Overtime? data;
 
-  OvertimeStatusResponseModel({
-    this.status,
-    this.message,
-    this.data,
-  });
+  OvertimeStatusResponseModel({this.status, this.message, this.data});
 
   factory OvertimeStatusResponseModel.fromJson(String str) =>
       OvertimeStatusResponseModel.fromMap(json.decode(str));
@@ -129,10 +121,10 @@ class OvertimeStatusResponseModel {
       );
 
   Map<String, dynamic> toMap() => {
-        'status': status,
-        'message': message,
-        'data': data?.toMap(),
-      };
+    'status': status,
+    'message': message,
+    'data': data?.toMap(),
+  };
 }
 
 // Response model for single overtime (start/end overtime)
@@ -140,10 +132,7 @@ class OvertimeSingleResponseModel {
   final String? message;
   final Overtime? data;
 
-  OvertimeSingleResponseModel({
-    this.message,
-    this.data,
-  });
+  OvertimeSingleResponseModel({this.message, this.data});
 
   factory OvertimeSingleResponseModel.fromJson(String str) =>
       OvertimeSingleResponseModel.fromMap(json.decode(str));
@@ -156,8 +145,5 @@ class OvertimeSingleResponseModel {
         data: json['data'] == null ? null : Overtime.fromMap(json['data']),
       );
 
-  Map<String, dynamic> toMap() => {
-        'message': message,
-        'data': data?.toMap(),
-      };
+  Map<String, dynamic> toMap() => {'message': message, 'data': data?.toMap()};
 }

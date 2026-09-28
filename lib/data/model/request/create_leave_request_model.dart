@@ -30,9 +30,9 @@ class CreateLeaveRequestModel {
       );
 
   Map<String, dynamic> toMap() => {
-        'leave_type_id': leaveTypeId.toString(),
-        'start_date': startDate,
-        'end_date': endDate,
-        if (reason != null && reason!.isNotEmpty) 'reason': reason,
-      };
+    'leave_type_id': leaveTypeId.toString(),
+    'start_date': startDate,
+    'end_date': endDate,
+    if (reason != null && reason!.isNotEmpty) 'reason': reason,
+  };
 }

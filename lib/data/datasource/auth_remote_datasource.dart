@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:camera/camera.dart';
+// import 'package:camera/camera.dart';
 import 'package:dartz/dartz.dart';
 import '../../core/constant/api.dart';
 import 'package:flutter_hrispro/data/datasource/auth_local_datasource.dart';

@@ -4,10 +4,7 @@ class LeaveResponseModel {
   final String? message;
   final List<Leave>? data;
 
-  LeaveResponseModel({
-    this.message,
-    this.data,
-  });
+  LeaveResponseModel({this.message, this.data});
 
   factory LeaveResponseModel.fromJson(String str) =>
       LeaveResponseModel.fromMap(json.decode(str));
@@ -19,16 +16,13 @@ class LeaveResponseModel {
         message: json['message'],
         data: json['data'] == null
             ? []
-            : List<Leave>.from(
-                json['data']!.map((x) => Leave.fromMap(x)),
-              ),
+            : List<Leave>.from(json['data']!.map((x) => Leave.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
-        'message': message,
-        'data':
-            data == null ? [] : List<dynamic>.from(data!.map((x) => x.toMap())),
-      };
+    'message': message,
+    'data': data == null ? [] : List<dynamic>.from(data!.map((x) => x.toMap())),
+  };
 }
 
 class Leave {
@@ -73,55 +67,54 @@ class Leave {
   String toJson() => json.encode(toMap());
 
   factory Leave.fromMap(Map<String, dynamic> json) => Leave(
-        id: json['id'],
-        employeeId: json['employee_id'],
-        leaveTypeId: json['leave_type_id'],
-        startDate: json['start_date'] == null
-            ? null
-            : DateTime.parse(json['start_date']),
-        endDate:
-            json['end_date'] == null ? null : DateTime.parse(json['end_date']),
-        totalDays: json['total_days'],
-        reason: json['reason'],
-        attachmentUrl: json['attachment_url'],
-        status: json['status'],
-        approvedBy: json['approved_by'],
-        approvedAt: json['approved_at'] == null
-            ? null
-            : DateTime.parse(json['approved_at']),
-        notes: json['notes'],
-        createdAt: json['created_at'] == null
-            ? null
-            : DateTime.parse(json['created_at']),
-        updatedAt: json['updated_at'] == null
-            ? null
-            : DateTime.parse(json['updated_at']),
-        leaveType: json['leave_type'] == null
-            ? null
-            : LeaveType.fromMap(json['leave_type']),
-        approver: json['approver'] == null
-            ? null
-            : Approver.fromMap(json['approver']),
-      );
+    id: json['id'],
+    employeeId: json['employee_id'],
+    leaveTypeId: json['leave_type_id'],
+    startDate: json['start_date'] == null
+        ? null
+        : DateTime.parse(json['start_date']),
+    endDate: json['end_date'] == null ? null : DateTime.parse(json['end_date']),
+    totalDays: json['total_days'],
+    reason: json['reason'],
+    attachmentUrl: json['attachment_url'],
+    status: json['status'],
+    approvedBy: json['approved_by'],
+    approvedAt: json['approved_at'] == null
+        ? null
+        : DateTime.parse(json['approved_at']),
+    notes: json['notes'],
+    createdAt: json['created_at'] == null
+        ? null
+        : DateTime.parse(json['created_at']),
+    updatedAt: json['updated_at'] == null
+        ? null
+        : DateTime.parse(json['updated_at']),
+    leaveType: json['leave_type'] == null
+        ? null
+        : LeaveType.fromMap(json['leave_type']),
+    approver: json['approver'] == null
+        ? null
+        : Approver.fromMap(json['approver']),
+  );
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'employee_id': employeeId,
-        'leave_type_id': leaveTypeId,
-        'start_date': startDate?.toIso8601String(),
-        'end_date': endDate?.toIso8601String(),
-        'total_days': totalDays,
-        'reason': reason,
-        'attachment_url': attachmentUrl,
-        'status': status,
-        'approved_by': approvedBy,
-        'approved_at': approvedAt?.toIso8601String(),
-        'notes': notes,
-        'created_at': createdAt?.toIso8601String(),
-        'updated_at': updatedAt?.toIso8601String(),
-        'leave_type': leaveType?.toMap(),
-        'approver': approver?.toMap(),
-      };
+    'id': id,
+    'employee_id': employeeId,
+    'leave_type_id': leaveTypeId,
+    'start_date': startDate?.toIso8601String(),
+    'end_date': endDate?.toIso8601String(),
+    'total_days': totalDays,
+    'reason': reason,
+    'attachment_url': attachmentUrl,
+    'status': status,
+    'approved_by': approvedBy,
+    'approved_at': approvedAt?.toIso8601String(),
+    'notes': notes,
+    'created_at': createdAt?.toIso8601String(),
+    'updated_at': updatedAt?.toIso8601String(),
+    'leave_type': leaveType?.toMap(),
+    'approver': approver?.toMap(),
+  };
 }
 
 class LeaveType {
@@ -146,26 +139,26 @@ class LeaveType {
   String toJson() => json.encode(toMap());
 
   factory LeaveType.fromMap(Map<String, dynamic> json) => LeaveType(
-        id: json['id'],
-        name: json['name'],
-        quotaDays: json['quota_days'],
-        isPaid: json['is_paid'],
-        createdAt: json['created_at'] == null
-            ? null
-            : DateTime.parse(json['created_at']),
-        updatedAt: json['updated_at'] == null
-            ? null
-            : DateTime.parse(json['updated_at']),
-      );
+    id: json['id'],
+    name: json['name'],
+    quotaDays: json['quota_days'],
+    isPaid: json['is_paid'],
+    createdAt: json['created_at'] == null
+        ? null
+        : DateTime.parse(json['created_at']),
+    updatedAt: json['updated_at'] == null
+        ? null
+        : DateTime.parse(json['updated_at']),
+  );
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'name': name,
-        'quota_days': quotaDays,
-        'is_paid': isPaid,
-        'created_at': createdAt?.toIso8601String(),
-        'updated_at': updatedAt?.toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    'quota_days': quotaDays,
+    'is_paid': isPaid,
+    'created_at': createdAt?.toIso8601String(),
+    'updated_at': updatedAt?.toIso8601String(),
+  };
 }
 
 class Approver {
@@ -216,50 +209,50 @@ class Approver {
   String toJson() => json.encode(toMap());
 
   factory Approver.fromMap(Map<String, dynamic> json) => Approver(
-        id: json['id'],
-        name: json['name'],
-        email: json['email'],
-        emailVerifiedAt: json['email_verified_at'],
-        twoFactorSecret: json['two_factor_secret'],
-        twoFactorRecoveryCodes: json['two_factor_recovery_codes'],
-        twoFactorConfirmedAt: json['two_factor_confirmed_at'],
-        fcmToken: json['fcm_token'],
-        createdAt: json['created_at'] == null
-            ? null
-            : DateTime.parse(json['created_at']),
-        updatedAt: json['updated_at'] == null
-            ? null
-            : DateTime.parse(json['updated_at']),
-        phone: json['phone'],
-        role: json['role'],
-        position: json['position'],
-        department: json['department'],
-        jabatanId: json['jabatan_id'],
-        departemenId: json['departemen_id'],
-        shiftKerjaId: json['shift_kerja_id'],
-        faceEmbedding: json['face_embedding'],
-        imageUrl: json['image_url'],
-      );
+    id: json['id'],
+    name: json['name'],
+    email: json['email'],
+    emailVerifiedAt: json['email_verified_at'],
+    twoFactorSecret: json['two_factor_secret'],
+    twoFactorRecoveryCodes: json['two_factor_recovery_codes'],
+    twoFactorConfirmedAt: json['two_factor_confirmed_at'],
+    fcmToken: json['fcm_token'],
+    createdAt: json['created_at'] == null
+        ? null
+        : DateTime.parse(json['created_at']),
+    updatedAt: json['updated_at'] == null
+        ? null
+        : DateTime.parse(json['updated_at']),
+    phone: json['phone'],
+    role: json['role'],
+    position: json['position'],
+    department: json['department'],
+    jabatanId: json['jabatan_id'],
+    departemenId: json['departemen_id'],
+    shiftKerjaId: json['shift_kerja_id'],
+    faceEmbedding: json['face_embedding'],
+    imageUrl: json['image_url'],
+  );
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'name': name,
-        'email': email,
-        'email_verified_at': emailVerifiedAt,
-        'two_factor_secret': twoFactorSecret,
-        'two_factor_recovery_codes': twoFactorRecoveryCodes,
-        'two_factor_confirmed_at': twoFactorConfirmedAt,
-        'fcm_token': fcmToken,
-        'created_at': createdAt?.toIso8601String(),
-        'updated_at': updatedAt?.toIso8601String(),
-        'phone': phone,
-        'role': role,
-        'position': position,
-        'department': department,
-        'jabatan_id': jabatanId,
-        'departemen_id': departemenId,
-        'shift_kerja_id': shiftKerjaId,
-        'face_embedding': faceEmbedding,
-        'image_url': imageUrl,
-      };
+    'id': id,
+    'name': name,
+    'email': email,
+    'email_verified_at': emailVerifiedAt,
+    'two_factor_secret': twoFactorSecret,
+    'two_factor_recovery_codes': twoFactorRecoveryCodes,
+    'two_factor_confirmed_at': twoFactorConfirmedAt,
+    'fcm_token': fcmToken,
+    'created_at': createdAt?.toIso8601String(),
+    'updated_at': updatedAt?.toIso8601String(),
+    'phone': phone,
+    'role': role,
+    'position': position,
+    'department': department,
+    'jabatan_id': jabatanId,
+    'departemen_id': departemenId,
+    'shift_kerja_id': shiftKerjaId,
+    'face_embedding': faceEmbedding,
+    'image_url': imageUrl,
+  };
 }

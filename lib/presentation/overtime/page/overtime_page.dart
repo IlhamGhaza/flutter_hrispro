@@ -5,8 +5,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constant/colors.dart';
 import '../../../core/components/top_bar.dart';
 import '../../../core/components/status_badge.dart';
-import '../../../Data/datasource/mock_data_source.dart';
 import '../bloc/overtime_cubit.dart';
+import '../bloc/get_overtimes/get_overtimes_bloc.dart';
+import 'package:intl/intl.dart';
 
 class OvertimePage extends StatelessWidget {
   const OvertimePage({super.key});
@@ -20,8 +21,54 @@ class OvertimePage extends StatelessWidget {
   }
 }
 
-class _OvertimeView extends StatelessWidget {
+class _OvertimeView extends StatefulWidget {
   const _OvertimeView();
+
+  @override
+  State<_OvertimeView> createState() => _OvertimeViewState();
+}
+
+class _OvertimeViewState extends State<_OvertimeView> {
+  final DateFormat _dateFormatter = DateFormat('EEE, dd MMM yyyy');
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<GetOvertimesBloc>().add(
+      const GetOvertimesEvent.getOvertimes(),
+    );
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return '-';
+    try {
+      final dateTime = DateTime.parse(dateStr);
+      return _dateFormatter.format(dateTime);
+    } catch (_) {
+      return dateStr;
+    }
+  }
+
+  String _calculateHrs(String? start, String? end) {
+    if (start == null || end == null || start.isEmpty || end.isEmpty) return '-';
+    try {
+      final startTime = DateFormat('HH:mm:ss').parse(start);
+      final endTime = DateFormat('HH:mm:ss').parse(end);
+      final diff = endTime.difference(startTime);
+      final hrs = diff.inMinutes / 60.0;
+      return '${hrs.toStringAsFixed(1)}h';
+    } catch (_) {
+      try {
+        final startTime = DateFormat('HH:mm').parse(start);
+        final endTime = DateFormat('HH:mm').parse(end);
+        final diff = endTime.difference(startTime);
+        final hrs = diff.inMinutes / 60.0;
+        return '${hrs.toStringAsFixed(1)}h';
+      } catch (_) {
+        return '-';
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -335,57 +382,87 @@ class _OvertimeView extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 const SizedBox(height: 12),
-                ...MockDataSource.overtime.map((o) {
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.border),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              o.project,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                BlocBuilder<GetOvertimesBloc, GetOvertimesState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      orElse: () => const Center(child: CircularProgressIndicator()),
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (msg) => Center(child: Text(msg)),
+                      loaded: (overtimesData) {
+                        final overtimes = overtimesData;
+                        if (overtimes.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(32.0),
+                              child: Text(
+                                'No overtime records yet',
+                                style: TextStyle(color: AppColors.textSecondary),
                               ),
                             ),
-                            StatusBadge(status: o.status),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${o.date} · ${o.start} – ${o.end}',
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          '${o.hrs} overtime',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+                          );
+                        }
+                        return Column(
+                          children: overtimes.map((o) {
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.border),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.02),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          o.reason ?? 'Overtime',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      StatusBadge(status: o.status ?? 'pending'),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${_formatDate(o.date)} · ${o.startTime ?? '--:--'} – ${o.endTime ?? '--:--'}',
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    '${_calculateHrs(o.startTime, o.endTime)} overtime',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    );
+                  },
+                ),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,

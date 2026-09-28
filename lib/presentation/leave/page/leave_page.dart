@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hrispro/presentation/leave/bloc/leave_balance/leave_balance_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constant/colors.dart';
 import '../../../core/components/top_bar.dart';
 import '../../../core/components/status_badge.dart';
-import '../../../Data/datasource/mock_data_source.dart';
+import 'package:intl/intl.dart';
 import '../bloc/leave_cubit.dart';
+import '../bloc/get_all_leaves/get_all_leaves_bloc.dart';
+import '../bloc/leave_type/leave_type_bloc.dart';
+import 'add_leave_form.dart';
 
 class LeavePage extends StatelessWidget {
   const LeavePage({super.key});
@@ -17,289 +21,41 @@ class LeavePage extends StatelessWidget {
   }
 }
 
-class _LeaveView extends StatelessWidget {
+class _LeaveView extends StatefulWidget {
   const _LeaveView();
+
+  @override
+  State<_LeaveView> createState() => _LeaveViewState();
+}
+
+class _LeaveViewState extends State<_LeaveView> {
+  final DateFormat _dateFormatter = DateFormat('dd MMM yyyy');
+
+  String _formatDate(DateTime? dateTime) {
+    if (dateTime == null) {
+      return '-';
+    }
+    return _dateFormatter.format(dateTime);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<GetAllLeavesBloc>().add(
+      const GetAllLeavesEvent.getAllLeaves(),
+    );
+    context.read<LeaveTypeBloc>().add(const LeaveTypeEvent.getLeaveTypes());
+    context.read<LeaveBalanceBloc>().add(
+      const LeaveBalanceEvent.getLeaveBalance(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LeaveCubit, bool>(
       builder: (context, showForm) {
         if (showForm) {
-          return Scaffold(
-            backgroundColor: AppColors.background,
-            appBar: TopBar(
-              title: 'New Leave Request',
-              onBack: () => context.read<LeaveCubit>().toggleForm(false),
-            ),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Leave Type',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: AppColors.background,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              value: 'Annual Leave',
-                              items:
-                                  [
-                                        'Annual Leave',
-                                        'Sick Leave',
-                                        'Special Leave',
-                                      ]
-                                      .map(
-                                        (t) => DropdownMenuItem(
-                                          value: t,
-                                          child: Text(
-                                            t,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
-                              onChanged: (v) {},
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Start Date',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 14,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.background,
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: AppColors.border,
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      '2026-06-25',
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'End Date',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 14,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.background,
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: AppColors.border,
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      '2026-06-27',
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.infoBg,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Row(
-                            children: [
-                              Icon(
-                                LucideIcons.alertCircle,
-                                size: 14,
-                                color: AppColors.info,
-                              ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Duration: 3 working days · Remaining balance: 12 days',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.info,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Reason',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.background,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: const TextField(
-                            maxLines: 3,
-                            decoration: InputDecoration(
-                              hintText:
-                                  'Briefly describe your reason for leave...',
-                              hintStyle: TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 14,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.all(12),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        RichText(
-                          text: const TextSpan(
-                            text: 'Supporting Document ',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: '(optional)',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.background,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.border,
-                              style: BorderStyle.solid,
-                            ), // No dotted border easy natively, use solid
-                          ),
-                          child: const Column(
-                            children: [
-                              Icon(
-                                LucideIcons.fileText,
-                                color: AppColors.textSecondary,
-                                size: 20,
-                              ),
-                              SizedBox(height: 6),
-                              Text(
-                                'Tap to upload document',
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                'PDF, JPG or PNG · Max 5MB',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () =>
-                          context.read<LeaveCubit>().toggleForm(false),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Submit Leave Request',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
+          return const AddLeaveForm();
         }
 
         return Scaffold(
@@ -329,29 +85,49 @@ class _LeaveView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    _buildBalanceCard(
-                      'Annual',
-                      12,
-                      AppColors.info,
-                      AppColors.infoBg,
-                    ),
-                    const SizedBox(width: 10),
-                    _buildBalanceCard(
-                      'Sick',
-                      6,
-                      AppColors.success,
-                      AppColors.successBg,
-                    ),
-                    const SizedBox(width: 10),
-                    _buildBalanceCard(
-                      'Special',
-                      4,
-                      AppColors.purple,
-                      AppColors.purpleBg,
-                    ),
-                  ],
+                BlocBuilder<LeaveTypeBloc, LeaveTypeState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      orElse: () => const SizedBox.shrink(),
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (msg) => const SizedBox.shrink(),
+                      success: (leaveTypesData) {
+                        final leaveTypes = leaveTypesData.data ?? [];
+                        if (leaveTypes.isEmpty) {
+                          return const Text('No leave balances available');
+                        }
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: leaveTypes.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final type = entry.value;
+
+                              // Determine colors based on index
+                              final colors = [
+                                (AppColors.info, AppColors.infoBg),
+                                (AppColors.success, AppColors.successBg),
+                                (AppColors.purple, AppColors.purpleBg),
+                                (AppColors.warning, AppColors.warningBg),
+                              ];
+
+                              final colorPair = colors[index % colors.length];
+
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: _buildBalanceCard(
+                                  type.name ?? 'Leave',
+                                  type.quotaDays ?? 0,
+                                  colorPair.$1,
+                                  colorPair.$2,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
                 const SizedBox(height: 20),
                 const Text(
@@ -359,58 +135,93 @@ class _LeaveView extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 const SizedBox(height: 12),
-                ...MockDataSource.leaves.map((l) {
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.border),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              l.type,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                BlocBuilder<GetAllLeavesBloc, GetAllLeavesState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      orElse: () => const SizedBox.shrink(),
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (msg) => Center(child: Text(msg)),
+                      success: (leavesData) {
+                        final leaves = leavesData.data ?? [];
+                        if (leaves.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(32.0),
+                              child: Text(
+                                'No leave records yet',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
                             ),
-                            StatusBadge(status: l.status),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${l.start} – ${l.end} · ${l.days} day${l.days > 1 ? "s" : ""}',
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '"${l.reason}"',
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 11,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+                          );
+                        }
+                        return Column(
+                          children: leaves.map((l) {
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.border),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.02),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          l.leaveType?.name ?? 'Leave',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      StatusBadge(
+                                        status: l.status ?? 'pending',
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${_formatDate(l.startDate)} – ${_formatDate(l.endDate)} · ${l.totalDays ?? 0} day${(l.totalDays ?? 0) > 1 ? "s" : ""}',
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '"${l.reason ?? ''}"',
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 11,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    );
+                  },
+                ),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,

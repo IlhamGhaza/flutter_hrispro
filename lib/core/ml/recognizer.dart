@@ -33,8 +33,11 @@ class Recognizer {
   }
 
   List<dynamic> imageToArray(img.Image inputImage) {
-    img.Image resizedImage =
-        img.copyResize(inputImage, width: WIDTH, height: HEIGHT);
+    img.Image resizedImage = img.copyResize(
+      inputImage,
+      width: WIDTH,
+      height: HEIGHT,
+    );
     List<double> flattenedList = resizedImage.data!
         .expand((channel) => [channel.r, channel.g, channel.b])
         .map((value) => value.toDouble())
@@ -50,7 +53,7 @@ class Recognizer {
           int index = c * height * width + h * width + w;
           reshapedArray[index] =
               (float32Array[c * height * width + h * width + w] - 127.5) /
-                  127.5;
+              127.5;
         }
       }
     }
@@ -96,7 +99,14 @@ class Recognizer {
   Future<bool> isValidFace(List<double> emb) async {
     final authData = await AuthLocalDatasource().getAuthData();
     final faceEmbedding = authData!.user!.faceEmbedding;
-    PairEmbedding pair = findNearest(emb, faceEmbedding!.split(',').map((e) => double.parse(e)).toList().cast<double>());
+    PairEmbedding pair = findNearest(
+      emb,
+      faceEmbedding!
+          .split(',')
+          .map((e) => double.parse(e))
+          .toList()
+          .cast<double>(),
+    );
     print("distance= ${pair.distance}");
     if (pair.distance < 1.0) {
       return true;

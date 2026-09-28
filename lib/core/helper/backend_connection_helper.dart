@@ -44,7 +44,9 @@ class BackendConnectionHelper {
     try {
       final uri = Uri.parse(ApiConstants.baseUrl);
       final host = uri.host;
-      final port = uri.port != 0 ? uri.port : (uri.scheme == 'https' ? 443 : 80);
+      final port = uri.port != 0
+          ? uri.port
+          : (uri.scheme == 'https' ? 443 : 80);
 
       final socket = await Socket.connect(
         host,

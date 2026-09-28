@@ -5,4 +5,5 @@ class CheckInCubit extends Cubit<int> {
   void nextStep() => emit(state + 1);
   void prevStep() => emit(state - 1);
   void reset() => emit(0);
+  void setStep(int step) => emit(step);
 }

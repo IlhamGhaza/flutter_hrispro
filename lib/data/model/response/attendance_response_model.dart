@@ -4,10 +4,7 @@ class AttendanceResponseModel {
   final String? message;
   final List<Attendance>? data;
 
-  AttendanceResponseModel({
-    this.message,
-    this.data,
-  });
+  AttendanceResponseModel({this.message, this.data});
 
   factory AttendanceResponseModel.fromJson(String str) =>
       AttendanceResponseModel.fromMap(json.decode(str));
@@ -20,14 +17,14 @@ class AttendanceResponseModel {
         data: json["data"] == null
             ? []
             : List<Attendance>.from(
-                json["data"]!.map((x) => Attendance.fromMap(x))),
+                json["data"]!.map((x) => Attendance.fromMap(x)),
+              ),
       );
 
   Map<String, dynamic> toMap() => {
-        "message": message,
-        "data":
-            data == null ? [] : List<dynamic>.from(data!.map((x) => x.toMap())),
-      };
+    "message": message,
+    "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toMap())),
+  };
 }
 
 class Attendance {
@@ -73,45 +70,45 @@ class Attendance {
   String toJson() => json.encode(toMap());
 
   factory Attendance.fromMap(Map<String, dynamic> json) => Attendance(
-        id: json["id"],
-        userId: json["user_id"],
-        shiftId: json["shift_id"],
-        date: json["date"] == null ? null : DateTime.parse(json["date"]),
-        timeIn: json["time_in"],
-        timeOut: json["time_out"],
-        latlonIn: json["latlon_in"],
-        latlonOut: json["latlon_out"],
-        status: json["status"],
-        isWeekend: json["is_weekend"],
-        isHoliday: json["is_holiday"],
-        holidayWork: json["holiday_work"],
-        lateMinutes: json["late_minutes"],
-        earlyLeaveMinutes: json["early_leave_minutes"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-      );
+    id: json["id"],
+    userId: json["user_id"],
+    shiftId: json["shift_id"],
+    date: json["date"] == null ? null : DateTime.parse(json["date"]),
+    timeIn: json["time_in"],
+    timeOut: json["time_out"],
+    latlonIn: json["latlon_in"],
+    latlonOut: json["latlon_out"],
+    status: json["status"],
+    isWeekend: json["is_weekend"],
+    isHoliday: json["is_holiday"],
+    holidayWork: json["holiday_work"],
+    lateMinutes: json["late_minutes"],
+    earlyLeaveMinutes: json["early_leave_minutes"],
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+  );
 
   Map<String, dynamic> toMap() => {
-        "id": id,
-        "user_id": userId,
-        "shift_id": shiftId,
-        "date":
-            "${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}",
-        "time_in": timeIn,
-        "time_out": timeOut,
-        "latlon_in": latlonIn,
-        "latlon_out": latlonOut,
-        "status": status,
-        "is_weekend": isWeekend,
-        "is_holiday": isHoliday,
-        "holiday_work": holidayWork,
-        "late_minutes": lateMinutes,
-        "early_leave_minutes": earlyLeaveMinutes,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-      };
+    "id": id,
+    "user_id": userId,
+    "shift_id": shiftId,
+    "date":
+        "${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}",
+    "time_in": timeIn,
+    "time_out": timeOut,
+    "latlon_in": latlonIn,
+    "latlon_out": latlonOut,
+    "status": status,
+    "is_weekend": isWeekend,
+    "is_holiday": isHoliday,
+    "holiday_work": holidayWork,
+    "late_minutes": lateMinutes,
+    "early_leave_minutes": earlyLeaveMinutes,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+  };
 }

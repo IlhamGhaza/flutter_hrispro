@@ -4,10 +4,7 @@ class LeaveBalanceResponseModel {
   final String? message;
   final List<LeaveBalanceData>? data;
 
-  LeaveBalanceResponseModel({
-    this.message,
-    this.data,
-  });
+  LeaveBalanceResponseModel({this.message, this.data});
 
   factory LeaveBalanceResponseModel.fromJson(String str) =>
       LeaveBalanceResponseModel.fromMap(json.decode(str));
@@ -25,11 +22,9 @@ class LeaveBalanceResponseModel {
       );
 
   Map<String, dynamic> toMap() => {
-        'message': message,
-        'data': data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toMap())),
-      };
+    'message': message,
+    'data': data == null ? [] : List<dynamic>.from(data!.map((x) => x.toMap())),
+  };
 }
 
 class LeaveBalanceData {
@@ -91,19 +86,19 @@ class LeaveBalanceData {
       );
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'employee_id': employeeId,
-        'leave_type_id': leaveTypeId,
-        'year': year,
-        'quota_days': quotaDays,
-        'used_days': usedDays,
-        'remaining_days': remainingDays,
-        'carry_over_days': carryOverDays,
-        'last_updated': lastUpdated?.toIso8601String(),
-        'created_at': createdAt?.toIso8601String(),
-        'updated_at': updatedAt?.toIso8601String(),
-        'leave_type': leaveType?.toMap(),
-      };
+    'id': id,
+    'employee_id': employeeId,
+    'leave_type_id': leaveTypeId,
+    'year': year,
+    'quota_days': quotaDays,
+    'used_days': usedDays,
+    'remaining_days': remainingDays,
+    'carry_over_days': carryOverDays,
+    'last_updated': lastUpdated?.toIso8601String(),
+    'created_at': createdAt?.toIso8601String(),
+    'updated_at': updatedAt?.toIso8601String(),
+    'leave_type': leaveType?.toMap(),
+  };
 }
 
 class LeaveTypeInBalance {
@@ -143,11 +138,11 @@ class LeaveTypeInBalance {
       );
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'name': name,
-        'quota_days': quotaDays,
-        'is_paid': isPaid,
-        'created_at': createdAt?.toIso8601String(),
-        'updated_at': updatedAt?.toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    'quota_days': quotaDays,
+    'is_paid': isPaid,
+    'created_at': createdAt?.toIso8601String(),
+    'updated_at': updatedAt?.toIso8601String(),
+  };
 }

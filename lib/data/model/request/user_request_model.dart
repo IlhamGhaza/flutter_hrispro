@@ -17,11 +17,6 @@ class UserRequestModel {
   });
 
   Map<String, String> toMap() {
-    return {
-      'id': id.toString(),
-      'name': name,
-      'email': email,
-      'phone': phone,
-    };
+    return {'id': id.toString(), 'name': name, 'email': email, 'phone': phone};
   }
 }

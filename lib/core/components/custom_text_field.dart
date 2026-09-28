@@ -38,10 +38,7 @@ class CustomTextField extends StatelessWidget {
         if (showLabel) ...[
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
           ),
           const SpaceHeight(12.0),
         ],
